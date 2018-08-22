@@ -3,9 +3,9 @@
 const mongo = require('mongodb')
 //const mongourl = "mongodb://user:password@ds125892.mlab.com:25892/bkdb"
 const mongourl = "mongodb://" + process.env.MONGODB_USERNAME + ":" + process.env.MONGODB_PASSWORD + "@" + process.env.MONGODB_HOST + ":" + process.env.MONGODB_PORT + "/" + process.env.MONGODB_DBNAME
-var mongoclient = mongo.MongoClient
+const mongoclient = mongo.MongoClient
 
-var db
+let db
 mongoclient.connect(mongourl , { useNewUrlParser: true } , function(err, client) {
   if (!err) {
     console.log("connected to mongodb database") 
@@ -13,6 +13,7 @@ mongoclient.connect(mongourl , { useNewUrlParser: true } , function(err, client)
   }
   else {
     //TODO: unable to connect to database. Stop nodejs with error
+    console.log("Unable to connect to mongodb")
   }
  }
 )
@@ -35,17 +36,19 @@ urlParser = bodyParser.urlencoded({ extended: false }) ;
 
 //handle GET requests to list documents in the collection
 app.get('/api/notes', function (req,res) {
-   //no paging support
+   //no paging support, no limits on the find
+   const json = { "items" : [] } ;
    db.collection("mycollection").find({}).forEach( function(doc) {
         //this is the iterator function (as long as there are still documents)
         if (doc) {
-          res.write(JSON.stringify(doc))
+          json.items.push(doc) ;
         }
       } , 
       
       function (error) {
         //this is the end-callback function , when there are no more documents
-        //so we close the response object
+        //so we write the response output close the response object
+        res.write(JSON.stringify(json))
         res.end()
       }
    )
@@ -67,8 +70,19 @@ app.post('/api/notes/create', urlParser , function (req,res) {
       }
     })
 
-  }
+  })
 
-) ;
 
+//send html page with interface to submit new note which posts to the /api/notes/create api
+app.get("/view/createnote", function(req,res) {
+  res.sendfile("view/createnote.html")
+
+})
+
+
+//send html page with ajax call to /api/notes to load the notes into the interface
+app.get("/view/notes", function(req,res) {
+  res.sendfile("view/notes.html")
+
+})
 

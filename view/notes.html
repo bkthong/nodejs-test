@@ -1,0 +1,43 @@
+<html>
+<title>View Notes</title>
+
+<link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
+<script>
+
+
+function loadNotes() {
+/* AJAX call to the /api/notes to restrive the notes collection { "items" : [] }  */
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+             const myObj = JSON.parse(this.responseText);
+             console.log(myObj)
+             renderNotes(JSON.parse(this.responseText)) ;
+       }
+    };
+    xhttp.open("GET", "/api/notes", true);
+    xhttp.send(); 
+}
+
+function renderNotes(json) {
+/* Called by loadNotes to render the JSON object returned as a table for viewing on the page */
+
+  let html = '<table class="pure-table"><thead><tr><th>Title</th><th>Details</th></tr></thead>'
+  for (var i=0 ; i<json.items.length ; i++) {
+    html += "<tr><td>" + json.items[i].title  + "</td><td>" + json.items[i].details + "</td></tr>" 
+  }
+  html  += "</table>"
+  console.log(html)
+  document.getElementById("data").innerHTML = html  //update the data div section with the table generated
+}
+
+
+</script>
+<body onload="loadNotes()">
+<br />
+<h1>Notes</h1>
+<div id="data">
+</div>
+</body>
+</html>
