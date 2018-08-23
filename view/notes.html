@@ -22,21 +22,55 @@ function loadNotes() {
 
 function renderNotes(json) {
 /* Called by loadNotes to render the JSON object returned as a table for viewing on the page */
-
-  let html = '<table class="pure-table"><thead><tr><th>Title</th><th>Details</th><th>Action</th></tr></thead>'
+  let html = "<form method=POST ACTION=''>"
+  html += '<table class="pure-table"><thead><tr><th></th><th>Title</th><th>Details</th></tr></thead>'
   for (var i=0 ; i<json.items.length ; i++) {
-    html += "<tr><td>" + json.items[i].title  + "</td><td>" + json.items[i].details + "</td><td>" + json.items[i]._id +"</td></tr>" 
+    html += "<tr><td><input id='_id' type='checkbox' value='" + json.items[i]._id +"' /></td><td>" + json.items[i].title  + "</td><td>" + json.items[i].details + "</td></tr>" 
   }
-  html  += "</table>"
-  //console.log(html)
+  html  += "</table></form>"
+  console.log(html)
   document.getElementById("data").innerHTML = html  //update the data div section with the table generated
 }
 
+function deleteNotes() {
+  //console.log(document.forms[0]._id.length)
+  const ids = document.forms[0]._id 
+  let json_ids = {"items": []} ;
+  for ( var i=0 ; i< ids.length ; i++) {
+    if ( ids[i].checked ) {
+      json_ids.items.push(ids[i].value)
+    }
+  }
+  if (json_ids.items.length > 0 ) {
+    // call REST api to delete passing in json object
+    doDelete(json_ids)
+  }
+  else {
+    alert("nothing selected for deletion")
+  }
+}
 
+
+function doDelete(obj) {
+    // obj -->  { "items" : ["id1" , "id2" ] }
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+             console.log(this.responseText)
+             loadNotes()  //TODO: this is inefficient but will do for now. to reload the notes listing
+       }
+    };
+
+    xhttp.open("POST", "/api/notes/delete", true);
+    xhttp.setRequestHeader("Content-type", "application/json");
+    xhttp.send(JSON.stringify(obj)); 
+
+}
 </script>
 <body onload="loadNotes()">
 <br />
 <h1>Notes</h1>
+<input class="pure-button" type="button" id="delete" value="Delete" onclick="deleteNotes()" /> <br /><br />
 <div id="data">
 </div>
 </body>

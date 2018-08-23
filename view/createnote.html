@@ -2,22 +2,11 @@
 <title>Create New Note</title>
 <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css" integrity="sha384-nn4HPE8lTHyVtfCBi5yW9d20FjT8BJwUXyWZT9InLYax14RDjBj46LmSztkmNP9w" crossorigin="anonymous">
 <script>
-function init() {
-  let title = document.getElementById("title") ;
-  let details = document.getElementById("details") ;
-  title.onfocus = dofocus
-  details.onfocus = dofocus
-}
 
-function dofocus(match) {
-  console.log(match)
-  this.value = "" ;  //first time focus. Clear the field
-  this.onfocus = null //unregister the handler. we don't want to clear the field for subsequent focus events
-}
 </script>
 <body onload="">
 <div id="main">
-<form METHOD=POST ACTION="/api/notes/create" class="pure-form pure-form-aligned">
+<form METHOD=POST ACTION="/api/notes/createurlparser" class="pure-form pure-form-aligned">
   <h1>Create Note</h1>
   <div class="pure-control-group">
   <label for="title">Title</label>

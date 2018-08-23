@@ -80,6 +80,24 @@ app.post('/api/notes/create', jsonParser , function (req,res) {
 
   })
 
+//temp for handling my view/createnote.html for which uses x-www-form-urlencoded
+app.post('/api/notes/createurlparser', urlParser , function (req,res) {
+    //res.send('Data posted: <br/>Title: ' + req.body.title + "<br/>Details: " + req.body.details)
+    
+    let doc = {}
+    doc.title = req.body.title 
+    doc.details = req.body.details
+
+    db.collection("mycollection").insertOne(doc , function( err, result ) {
+      if (!err) {
+        res.send("Insert successful") ;
+      }
+      else {
+        res.send("Insert failed") ;
+      }
+    })
+
+  })
 
 
 /* 
