@@ -34,7 +34,11 @@ jsonParser = bodyParser.json() ;
 urlParser = bodyParser.urlencoded({ extended: false }) ;
 
 
-//handle GET requests to list documents in the collection
+/* 
+ * Handle GET requests to list documents in the collection
+ * Returns json string { "items" : [] }, where items is an array of documents
+ *
+ */
 app.get('/api/notes', function (req,res) {
    //no paging support, no limits on the find
    const json = { "items" : [] } ;
@@ -55,12 +59,16 @@ app.get('/api/notes', function (req,res) {
 }) ;
 
 //handle post request to the url specified using a urlparser (created via body-parser) 
-app.post('/api/notes/create', urlParser , function (req,res) {
+//now changed to use jsonParser. req.body is now the required json object
+app.post('/api/notes/create', jsonParser , function (req,res) {
     //res.send('Data posted: <br/>Title: ' + req.body.title + "<br/>Details: " + req.body.details)
-
+    /*
     let doc = {}
     doc.title = req.body.title 
     doc.details = req.body.details
+    */
+
+    const doc = req.body  //because now using jsonParser. We expect client to submit json
     db.collection("mycollection").insertOne(doc , function( err, result ) {
       if (!err) {
         res.send("Insert successful") ;
@@ -73,16 +81,47 @@ app.post('/api/notes/create', urlParser , function (req,res) {
   })
 
 
+
+/* 
+ * Handle delete request given a json object of _ids to delete
+ * As we are using jsonParser, req.body is the json object - { "items": ["id1","id2"] }
+ */
+app.post("/api/notes/delete", jsonParser, function( req, res ) {
+
+   //TODO: security checks to see whether user is allowed to delete
+
+   const items = req.body.items ;
+   let id_array = [] ;
+
+   //construct the array of object ids for use in the filter
+   for ( var i=0 ; i <  items.length ; i++ ) {
+      id_array.push(new mongo.ObjectId(items[i]))
+   }
+
+   const filter = { "_id": { "$in": id_array } }  //search for documents with _ids in the id_array of object ids
+   console.log(filter)
+   let result = db.collection("mycollection").deleteMany(filter, function( error, result) {
+      if ( result.deletedCount > 0 ) {
+          res.send("delete successful. Deleted count is: " + result.deletedCount)
+       }
+      else {
+        res.send("delete failed")
+      }
+    }) 
+})
+
+
+
 //send html page with interface to submit new note which posts to the /api/notes/create api
 app.get("/view/createnote", function(req,res) {
-  res.sendfile("view/createnote.html")
+  res.sendFile(__dirname + "/view/createnote.html")
 
 })
 
 
 //send html page with ajax call to /api/notes to load the notes into the interface
 app.get("/view/notes", function(req,res) {
-  res.sendfile("view/notes.html")
+  res.sendFile( __dirname + "/view/notes.html")
 
 })
 

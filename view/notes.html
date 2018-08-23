@@ -23,12 +23,12 @@ function loadNotes() {
 function renderNotes(json) {
 /* Called by loadNotes to render the JSON object returned as a table for viewing on the page */
 
-  let html = '<table class="pure-table"><thead><tr><th>Title</th><th>Details</th></tr></thead>'
+  let html = '<table class="pure-table"><thead><tr><th>Title</th><th>Details</th><th>Action</th></tr></thead>'
   for (var i=0 ; i<json.items.length ; i++) {
-    html += "<tr><td>" + json.items[i].title  + "</td><td>" + json.items[i].details + "</td></tr>" 
+    html += "<tr><td>" + json.items[i].title  + "</td><td>" + json.items[i].details + "</td><td>" + json.items[i]._id +"</td></tr>" 
   }
   html  += "</table>"
-  console.log(html)
+  //console.log(html)
   document.getElementById("data").innerHTML = html  //update the data div section with the table generated
 }
 
