@@ -143,3 +143,8 @@ app.get("/view/notes", function(req,res) {
 
 })
 
+//send default page for / with links to /view/createnote and /view/notes
+app.get("/", function(req,res) {
+  res.sendFile( __dirname + "/view/default.html")
+
+})
