@@ -1,6 +1,5 @@
 # nodejs-test
 To test nodejs with mongodb
---- some changes ---
 Environment variables for connecting to mongodb used in this app:
 ANOTHER CHANGE!!
 MONGODB_USERNAME 
